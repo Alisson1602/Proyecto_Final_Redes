@@ -1,0 +1,177 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package AlgoritmoDijkstra;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+
+/**
+ *
+ * @author galla
+ * Integrante:
+ *  Alisson Gallardo Guevara - 20183928
+ */
+public class Dijkstra 
+{    
+    public static void mostrar(int dist[], int b) 
+    {
+        System.out.println("");
+        System.out.println("Distancias mínimas desde el origen");
+        System.out.println("");
+        System.out.println("Vértice \t Distancia mínima desde el origen");
+        for (int i = 0; i < b; i++) 
+        {
+            System.out.println((i) + " \t\t\t " + dist[i]);
+        }
+    }
+    
+    public static int minDistancia(int dist[], Boolean visitado[], int b) 
+    {
+        int minValor = 99999; // Inicializa valor principal
+        int min = -1;
+
+        for (int v = 0; v < b; v++) //Recorre nodos visitados
+        {
+            // Si el nodo no ha sido visitado, el valor será falso
+            // y si su valor es menor al minimo (99999)
+            if (visitado[v] == false && dist[v] <= minValor) 
+            {
+                minValor = dist[v];
+                min = v;
+            }
+        }
+        return min;
+    }
+    
+    public static void dijkstra(int grafo[][], int origen) 
+    {
+        int x = grafo[0].length;
+        int dist[] = new int[x];
+
+        /* dist almacena las menores distancias del origen a cada vértice i procesado, 
+            entonces se le asignará el valor true y eso lo incluirá en la solución*/
+        Boolean procesado[] = new Boolean[x];
+
+        // Inicializamos las ditancias con un valor grande y procesado como falso
+        for (int i = 0; i < x; i++) 
+        {
+            dist[i] = 99999;
+            procesado[i] = false;
+        }
+     
+        dist[origen] = 0;
+
+        // Menor camino para todos los vértices 
+        for (int i = 0; i < x; i++) 
+        {
+            // Elegimos la distancia menor de los vértices no visitados
+            int d = minDistancia(dist, procesado, x); // d: origen en la primera iteración
+
+            procesado[d] = true; // Vértice procesado
+
+            // Actualizar la distancia de los vértices adyacentes al seleciconado 
+            for (int v = 0; v < x; v++) 
+            {
+            /*  Actualizamos dist si no está procesado*/
+                if (!procesado[v] && grafo[d][v] != 0 && dist[d] != 99999 && dist[d] + grafo[d][v] < dist[v]) 
+                {
+                    dist[v] = dist[d] + grafo[d][v];
+                }
+            }
+        }
+
+        // Imprimir el arreglo de solución
+        mostrar(dist, x);
+    }
+    
+    public static void matriz(int i, int j, int valor, int[][] graph) 
+    {
+        graph[i+1 - 1][j+1 - 1] = valor;
+    }
+    
+    public static void main(String[] args) throws IOException 
+    {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Ingrese cantidad de vertices del grafo: ");
+
+        String sVertices = in.readLine(); // Lectura de cantidad de vertices del grafo 
+        // Retorna un String con el dato
+
+        int cVertices = Integer.parseInt(sVertices); // Pasamos de string a int
+        
+        System.out.print("Ingrese cantidad de aristas en el grafo: ");
+
+        String sArista = in.readLine();
+        // Lee cantidad de vertices del grafo con readLine(). 
+        // Retorna un String con el dato
+
+        int cArista = Integer.parseInt(sArista); // Pasamos de string a int
+        
+        int grafo[][] = new int[cVertices][cVertices];
+        
+        for (int i = 0; i < cArista; i++) 
+        {
+            System.out.print("Ingrese vertice de origen " + (i+1) + ": ");
+            int origen = Integer.parseInt(in.readLine());
+            System.out.print("Ingrese vertice de destino " + (i+1) + ": ");
+            int destino = Integer.parseInt(in.readLine());
+            System.out.print("Ingrese peso de la arista " + (i+1) + ": ");
+            int peso = Integer.parseInt(in.readLine());
+            matriz(origen, destino, peso, grafo);
+            System.out.println("");
+        }
+        
+        System.out.println("");
+        System.out.println("Matriz de adyacencia");
+        System.out.println("");
+
+        // Muestra matriz
+        for (int x = 0; x < grafo.length; x++) 
+        {
+            for (int y = 0; y < grafo[x].length; y++) 
+            {
+                System.out.print("|\t" + grafo[x][y] + "\t|");
+            }
+            System.out.println(" ");
+        }
+        
+        System.out.println("");
+        System.out.print("Ingrese el vertice desde el cual se analizará el camino mínimo: ");
+        int origen = Integer.parseInt(in.readLine());
+        
+        // 1° métrica: Tiempo de ejecución del programa
+        double tInicio;
+        double tFin;
+        double tTotal;
+        
+        tInicio = System.nanoTime();
+  
+        //Llamamos a dijkstra
+        dijkstra(grafo, origen);
+        
+        tFin = System.nanoTime();
+        tTotal = (tFin - tInicio) / 1e6;      
+        System.out.println("");
+        
+        // Métricas o indicadores:
+        // 1° Métrica: Tiempo de ejecución
+        System.out.println("Métricas / Indicadores:");
+        System.out.println("");
+        System.out.println("1° Métrica: Tiempo de ejecución del programa: " + tTotal + " milisegundos");
+    
+        // 2° Métrica: Memoria utilizada
+        System.gc();
+        float dataSize = 1024 * 1024;
+        Runtime runtime = Runtime.getRuntime();
+        System.out.println ("2° Métrica: Memoria utilizada: " + (runtime.totalMemory() - runtime.freeMemory()) / dataSize + " MB");
+        
+        // 3° Métrica: Cantidad de líneas
+        int lineas = 177;
+        System.out.println("3° Métrica: Líneas de código: " +  lineas + " lineas");       
+    }
+}
